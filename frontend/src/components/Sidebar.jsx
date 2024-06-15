@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { TbMessage } from "react-icons/tb";
 import { FiUserPlus } from "react-icons/fi";
 import { MdOutlineGroupAdd } from "react-icons/md";
@@ -9,31 +9,51 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import UserProfile from './UserProfile';
+import SearchFriends from './SearchFriends';
+import Notifications from './Notifications';
+import AddGroup from './AddGroup';
 
 
 const Sidebar = () => {
-    const currentTab = "messages";
+    const [currentTab,setCurrentTab] = useState("messages");
     const [open, setOpen] = React.useState(false);
+
+    const handleOpenModal = (tabName) => {
+         setOpen(true);
+         setCurrentTab(tabName)
+    }
+
+    const handleCloseModal = () => {
+        setOpen(false);
+        setCurrentTab("messages");
+    }
   return (
     <>
         <div className='min-w-[90px] flex flex-col justify-between items-center h-screen bg-[#181F2F] pt-5'>
             <div>
                 <div 
-                onClick={() => setOpen(true)}
-                className='h-[60px] w-[60px] rounded-full bg-white'>
+                    onClick={() => handleOpenModal("profile")}
+                    className='h-[60px] w-[60px] rounded-full bg-white cursor-pointer'>
                 
                 </div>
                 <div className='text-white flex flex-col gap-8 items-center mt-20'>
-                    <div className={`${currentTab === "messages" && "text-[#fd4f50]"}`}>
+                    <div onClick={() => setCurrentTab("messages")}
+                      className={`${currentTab === "messages" && "text-[#fd4f50]"} cursor-pointer`}>
                         <TbMessage size={26}/>
                     </div>
-                    <div className={`${currentTab === "addFriend" && "text-[#fd4f50]"}`}>
+                    <div 
+                       onClick={() => handleOpenModal("searchFriend")}
+                       className={`${currentTab === "searchFriend" && "text-[#fd4f50]"} cursor-pointer`}>
                         <FiUserPlus  size={24}/>
                     </div>
-                    <div className={`${currentTab === "addGroup" && "text-[#fd4f50]"}`}>
+                    <div 
+                      onClick={() => handleOpenModal("addGroup")}
+                      className={`${currentTab === "addGroup" && "text-[#fd4f50]"} cursor-pointer`}>
                         <MdOutlineGroupAdd  size={24}/>
                     </div>
-                    <div className={`${currentTab === "notifications" && "text-[#fd4f50]"}`}>
+                    <div 
+                      onClick={() => handleOpenModal("notifications")}
+                      className={`${currentTab === "notifications" && "text-[#fd4f50]"} cursor-pointer`}>
                         <IoNotificationsOutline  size={24}/>
                     </div>
                 </div>
@@ -44,12 +64,31 @@ const Sidebar = () => {
         </div>
         <Modal
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={handleCloseModal}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
         >
-        <div className="absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 p-4 w-[400px] bg-white outline-none rounded-md shadow-custom">
-            <UserProfile/>
+        <div className="absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 outline-none">
+            {
+                currentTab === "profile" && (
+                    <UserProfile/>
+                )
+            }
+            {
+                currentTab === "searchFriend" && (
+                    <SearchFriends/>
+                )
+            }
+            {
+                currentTab === "notifications" && (
+                    <Notifications/>
+                )
+            }
+            {
+                currentTab == "addGroup"  && (
+                    <AddGroup/>
+                )
+            }
         </div>
       </Modal>
     </>

@@ -2,7 +2,7 @@ import React from 'react'
 
 const UserProfile = () => {
   return (
-    <div className="flex flex-col items-center absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 py-8 px-14 w-[700px] bg-white outline-none rounded-md shadow-custom">
+    <div className="flex flex-col items-center  py-8 px-14 w-[700px] bg-white outline-none rounded-md shadow-custom">
         <div className='h-[200px] w-[200px] rounded-full bg-black'>
 
         </div>
