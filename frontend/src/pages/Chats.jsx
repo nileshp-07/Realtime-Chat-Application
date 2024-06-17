@@ -8,7 +8,7 @@ const Chats = () => {
   const [friendsChats, setFriendChats] = useState([]);
   const [groupsChats, setGroupsChats] = useState([]);
   return (
-    <div className='w-[500px] max-h-screen bg-[#EBF4FB] px-3 py-8'>
+    <div className='max-w-[400px] min-w-[400px] max-h-screen bg-[#EBF4FB] px-3 py-8'>
        <div className='flex gap-20 justify-center mb-5'>
 
           <div className='flex flex-col cursor-pointer font-medium'

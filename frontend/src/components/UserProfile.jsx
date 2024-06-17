@@ -39,7 +39,7 @@ const UserProfile = () => {
                  />
              </div>
              <div className='flex flex-col mt-5'>
-                 <label>Email Address:</label>
+                 <label>About me:</label>
                  <textarea
                     cols="10"
                     className='py-2 px-4 h-[70px] bg-[#E5E8ED] rounded-[4px] outline-none placeholder:font-light w-full'

@@ -8,7 +8,7 @@ const SearchFriends = () => {
         <h2 className='text-center text-xl font-semibold '>Add Friends</h2>
 
         <form className='w-full'>
-            <div className='my-10 w-full flex justify-between items-center gap-5 py-2 px-4 bg-[#E5E8ED] rounded-[4px] outline-non'>
+            <div className='my-10 w-full flex justify-between items-center gap-5 py-2 px-4 bg-[#E5E8ED] rounded-[4px] outline-none'>
                 <input
                     type='text'
                     name='searchFriend'
