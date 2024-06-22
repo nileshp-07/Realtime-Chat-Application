@@ -10,6 +10,7 @@ export const sendToken = (res , user, message) => {
       secure :  true
    }).json({
         success : true,
+        token,
         message,
         user
    })

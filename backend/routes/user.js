@@ -2,7 +2,8 @@ import express from "express";
 const router = express.Router(); 
 import {z} from "zod"
 import validateSchema from "../middlewares/validateSchema.js"
-import { login, signup } from "../controllers/auth.js";
+import { login, logout, signup, userProfile } from "../controllers/auth.js";
+import { isAuthenticated } from "../middlewares/auth.js";
 
 const signupSchema = z.object({
     name : z.string(),
@@ -19,6 +20,13 @@ const loginSchema = z.object({
 
 router.post("/signup" ,validateSchema(signupSchema), signup)
 router.post("/login" , validateSchema(loginSchema), login)
+
+
+router.use(isAuthenticated) // so adding a middleware for authentication which will be apply on all the below routes
+
+
+router.get("/user-profile", userProfile);
+router.get("/logout", logout);
 
 
 export default router;
