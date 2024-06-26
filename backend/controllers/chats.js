@@ -211,7 +211,15 @@ export const sendAttachments = async(req, res, next) => {
         if(!chat) return next({message: "Chat not found", status: 404});
 
         // update files to clodinary 
-        const attachmentLinks = ["attachment1", "attachment2"];
+        const attachmentLinks = [
+            {
+               public_id : "attachment1",
+               url : "attachment1"
+            }, 
+            {
+               public_id : "attachment2",
+               url : "attachment2"
+            }];
 
         const message  = await Message.create({
             content: "", //no content in case of attachments
@@ -297,5 +305,102 @@ export const renameGroup = async (req, res, next) => {
     {
         console.error(err);
         return next({message: "Group name could not be changed"});
+    }
+}
+
+
+export const deleteGroup = async (req, res, next) => {
+    try{
+        const chatId  = req.params.id;
+
+        const chat = await Chat.findById(chatId);
+
+        if(!chat) return next({message: "Chat not found", status: 404});
+
+        if(chat.isGroup && chat.admin.toString() !== req.user._id.toString())
+            return next({message: "You are not allowed to delete the group", status: 411});
+
+
+        // now delete all the messages and files from the cloudinary 
+        const attachmentsMSG = await Message.find({
+            chat : chatId,
+            attachments : { $ne: []}  //find the chats where the attachment exitst and not equal to empty array
+        })
+
+        const public_ids = [];
+
+        attachmentsMSG.forEach((message) => {
+            message.attachments.forEach((attachment) => {
+                public_ids.push(attachment.public_id)
+            })
+        })
+
+        await Promise.all([
+            // deleteFilesFromCloudinary()
+            Message.deleteMany({chat: chatId}),
+            chat.deleteOne({_id: chatId})
+        ])
+
+
+        // eventEmitter function to be added 
+
+
+        return res.status(200).json({
+            success: true,
+            message: "Chat Deleted Successfully"
+        })
+
+
+
+    }
+    catch(err)
+    {
+        console.error(err);
+        return next({message : "Group could not be deleted"})
+    }
+}
+
+
+export const getChatMessages = async (req, res , next) => {
+    try{
+        const chatId = req.params.id;
+        const {page = 1} = req.query;
+
+        const perPageLimit = 20;
+        const skip = (page - 1)*perPageLimit;
+
+        const chat = await Chat.findById(chatId);
+
+        if(!chat) return next({message: "Chat not found", status: 404});
+
+        if(!chat.members.includes(req.user._id.toString()))  return next({message: "You are not allowed to access this chat", status: 401});
+
+
+        const [messages, totalMessagesCount] = await Promise.all([
+            Message.find({chat: chatId})
+                                    .sort({createdAt: -1})
+                                    .skip(skip)   //skip the first (skip) messages
+                                    .limit(perPageLimit)
+                                    .populate("sender", "name")  //populate the sender and select his name
+                                    .exec(), 
+            Message.countDocuments({chat: chatId})   //total number of messages
+        ])
+
+
+        const totalPages = Math.ceil(totalMessagesCount/perPageLimit) || 0;
+
+        return res.status(200).json({
+            success : true,
+            message : "Chat messages returned successfully",
+            messages: messages.reverse(),
+            totalPages
+        })
+
+
+    }
+    catch(err)
+    {
+        console.error(err)
+        return next({message: "Message retrival failed"});
     }
 }

@@ -20,7 +20,10 @@ export const signup = async (req, res, next) => {
             email,
             password: hashedPassword,
             username,
-            avatar : `https://api.dicebear.com/5.x/initials/svg?seed=${name}` 
+            avatar : {
+                public_id: `https://api.dicebear.com/5.x/initials/svg?seed=${name}`, 
+                url : `https://api.dicebear.com/5.x/initials/svg?seed=${name}` 
+            }
         })
     
     

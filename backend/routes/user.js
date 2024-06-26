@@ -4,6 +4,7 @@ import {z} from "zod"
 import validateSchema from "../middlewares/validateSchema.js"
 import { login, logout, signup, userProfile } from "../controllers/auth.js";
 import { isAuthenticated } from "../middlewares/auth.js";
+import { acceptRequest, searchUser, sendRequest } from "../controllers/user.js";
 
 const signupSchema = z.object({
     name : z.string(),
@@ -27,6 +28,9 @@ router.use(isAuthenticated) // so adding a middleware for authentication which w
 
 router.get("/user-profile", userProfile);
 router.get("/logout", logout);
+router.get("/search", searchUser);
+router.post("/sendrequest", sendRequest);
+router.post("/acceptRequest", acceptRequest)
 
 
 export default router;

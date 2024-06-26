@@ -16,9 +16,15 @@ const userSchema = new Schema({
         required : true,
         select : false,  //when ever we will fetch the user from the db so the password will not be fetch by default
      },
-    avatar : {
+    avatar: {
+      public_id: {
         type: String,
-        required : true
+        required: true,
+      },
+      url: {
+        type: String,
+        required: true,
+      },
     },
     bio : {
         type: String

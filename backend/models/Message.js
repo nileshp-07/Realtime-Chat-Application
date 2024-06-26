@@ -14,9 +14,18 @@ const messageSchema = new Schema({
         ref : "Chat",
         required : true
     },
-    attachments :[{
-        type : String  //the url will be stored into the cloudinary
-    }]
+    attachments: [
+      {
+        public_id: {
+          type: String,
+          required: true,
+        },
+        url: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
 },
 {
     timestamps : true
