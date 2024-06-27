@@ -151,3 +151,48 @@ export const acceptRequest = async (req, res, next) => {
         return next({message: "Error while accepting friend request", status: 400})
     }
 }
+
+
+export const getMyNotifications = async (req, res , next) => {
+    try{
+        const userId = req.user._id;
+
+        const requests = await Request.find({
+            receiver: userId
+        })
+        .populate("sender" , "avatar name username");
+
+        return res.status(200).json({
+            message: "All Notifications fetched successfully",
+            requests,
+        })
+    }
+    catch(err)
+    {
+        console.error(err);
+        return next({message: "Error while fetching Notifications"});
+    }
+}
+
+
+
+export const myFriends = async (req, res) => {
+    try{
+        const userId = req.user._id;
+
+        const user = await User.findById(userId).populate("friends");
+
+        if(!user) return next({message:"User not found" , status: 404});
+
+        return res.status(200).json({
+            success: true,
+            message: "all friends are fetched successfully",
+            friends : user.friends
+        })
+    }
+    catch(err)
+    {
+        console.error(err);
+        return next({message: "Error while fetching your friends"});
+    }
+}
