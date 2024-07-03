@@ -1,5 +1,6 @@
 import React ,{ lazy } from 'react'
 import {BrowserRouter, Routes, Route} from "react-router-dom"
+import { Toaster } from 'react-hot-toast'
 
 const Messages = lazy(() => import("./components/Messages"))
 const ChatInfo  = lazy(() => import("./components/ChatInfo"))
@@ -28,6 +29,8 @@ const App = () => {
                <Route path="*" element={<h1>Page not found</h1>}/>
             </Routes>
         </div>
+
+        <Toaster/>
      </BrowserRouter>
   )
 }

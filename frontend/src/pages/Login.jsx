@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { BsEyeSlash } from "react-icons/bs";
 import { BsEye } from "react-icons/bs";
+import toast from "react-hot-toast"
 const Login = () => {
     const [isLogin , setisLogin ] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
@@ -16,6 +17,8 @@ const Login = () => {
                                       password : "",
                                       confirmPassword : ""
                                     })
+    
+
    
 
     const handleSignupDataChange = (e) => {
@@ -40,9 +43,25 @@ const Login = () => {
       ))
     }
 
+    const signHandler = async (e) => {
+      e.preventDefault();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+      if(!signupData.name || !signupData.username || !signupData.password || !signupData.confirmPassword)
+      {
+          toast.error("All fields are required");
+          return;
+      }
+
+      if(signupData.password !== signupData.confirmPassword)
+      {
+        toast.error("Password does not match!!");
+        return;
+      }
+
+   }
+
+    const loginHandler = async (e) => {
+
     }
    
   return (
@@ -52,7 +71,7 @@ const Login = () => {
          <h2 className='text-center font-semibold text-3xl text-[#fd4f50]' >{isLogin ? "Welcome Back" : "Create Your Account"}</h2>
          <p className='text-lg font-medium mt-2 mb-5 italic'>{isLogin ? "please enter your details" : "Join Us and Start Chatting!"}</p>
 
-         <form onSubmit={handleSubmit}>
+         <form onSubmit={isLogin ? loginHandler : signHandler}>
             {
                !isLogin && (
                 <div className='flex flex-col'>
@@ -129,7 +148,7 @@ const Login = () => {
                )
             }
 
-            <button onClick={handleSubmit}
+            <button onClick={signHandler}
                   className='text-white py-2 px-5 w-full rounded-md bg-[#fd4f50] mt-10 font-medium'>
               {
                  isLogin ? "Sign up" : "Create Account"
