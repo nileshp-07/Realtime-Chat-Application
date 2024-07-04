@@ -1,6 +1,7 @@
 import express from "express";
 import {Server} from "socket.io";
 import {createServer} from "http";
+import cors from "cors"
 
 import dotenv from "dotenv"
 import connectDB from "./utils/db.js";
@@ -35,6 +36,10 @@ connectDB(process.env.DB_URL);
 // middlewares 
 app.use(express.json())
 app.use(cookieParser())
+app.use(cors({
+    origin : ["http://localhost:5173", process.env.CLIENT_URL],
+    credentials: true
+}))
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/chat", chatRoutes);
 

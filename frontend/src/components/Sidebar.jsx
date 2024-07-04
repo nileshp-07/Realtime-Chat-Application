@@ -9,12 +9,18 @@ import UserProfile from './UserProfile';
 import SearchFriends from './SearchFriends';
 import Notifications from './Notifications';
 import AddGroup from './AddGroup';
+import axios from "axios"
+import { server_url } from '../constants/envConfig';
+import {useDispatch, useSelector} from "react-redux"
+import { setToken, setUser } from '../redux/slices/authSlice';
+import toast from "react-hot-toast"
 
 
 const Sidebar = () => {
     const [currentTab,setCurrentTab] = useState("messages");
+    const {token} = useSelector((state) => state.auth) 
     const [open, setOpen] = React.useState(false);
-
+    const dispatch = useDispatch();
     const handleOpenModal = (tabName) => {
          setOpen(true);
          setCurrentTab(tabName)
@@ -24,6 +30,29 @@ const Sidebar = () => {
         setOpen(false);
         setCurrentTab("messages");
     }
+
+
+    const logoutHandler = async () => {
+        try{
+            const {data} = await axios.get(`${server_url}/user/logout`,{
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+
+            dispatch(setUser(null));
+            dispatch(setToken(null))
+
+            toast.success(data.message)            
+        }
+        catch(err)
+        {
+            toast.error(err.response.data.message || "Something went wrong");
+        }
+    }
+
+    
   return (
     <>
         <div className='min-w-[90px] flex flex-col justify-between items-center h-screen bg-[#181F2F] pt-5'>
@@ -55,7 +84,9 @@ const Sidebar = () => {
                     </div>
                 </div>
             </div>
-            <div className='text-white flex justify-center bg-[#1F2A3E] w-full p-5'>
+            <div 
+            onClick={logoutHandler}
+            className='text-white flex justify-center bg-[#1F2A3E] w-full p-5'>
                 <FiLogOut size={24}/>
             </div>
         </div>

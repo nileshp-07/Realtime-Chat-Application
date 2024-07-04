@@ -4,11 +4,11 @@ import { sendToken } from "../utils/sendToken.js";
 
 export const signup = async (req, res, next) => {
     try{
-        const {name, username, email , password, confirmPassword} = req.body;
+        const {name, username , password, confirmPassword} = req.body;
 
-        const userExist = await User.findOne({email: email});
+        const userExist = await User.findOne({username: username});
     
-        if(userExist) return next({message: "Email is already used", status: 401})
+        if(userExist) return next({message: "username is already used", status: 401})
     
     
         if(password !== confirmPassword)  return next({message: "password does not matched", status: 401})
@@ -17,7 +17,6 @@ export const signup = async (req, res, next) => {
     
         const user = await User.create({
             name,
-            email,
             password: hashedPassword,
             username,
             avatar : {
@@ -25,9 +24,11 @@ export const signup = async (req, res, next) => {
                 url : `https://api.dicebear.com/5.x/initials/svg?seed=${name}` 
             }
         })
+
+        user.password = undefined;
     
     
-        sendToken(res, user , "User registered successfully");
+        sendToken(res, user , "Account created");
     }
     catch(err)
     {
@@ -49,6 +50,8 @@ export const login = async (req, res, next) => {
     const isPasswordMatch = await bcrypt.compare(password, user.password);
 
     if (!isPasswordMatch) return next({message: "Password is incorrect", status: 401})
+
+    user.password = undefined;
     
     sendToken(res, user, "User logged in successfully");
 

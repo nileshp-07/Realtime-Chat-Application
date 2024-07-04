@@ -9,7 +9,6 @@ import { acceptRequest, getMyNotifications, myFriends, searchUser, sendRequest }
 const signupSchema = z.object({
     name : z.string(),
     username : z.string().min(5).max(12),
-    email : z.string().email("invalid email address").optional(),
     password : z.string(),
 })
 
