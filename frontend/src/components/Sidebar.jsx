@@ -19,6 +19,7 @@ import toast from "react-hot-toast"
 const Sidebar = () => {
     const [currentTab,setCurrentTab] = useState("messages");
     const {token} = useSelector((state) => state.auth) 
+    const {user} = useSelector((state) => state.auth) 
     const [open, setOpen] = React.useState(false);
     const dispatch = useDispatch();
     const handleOpenModal = (tabName) => {
@@ -60,7 +61,10 @@ const Sidebar = () => {
                 <div 
                     onClick={() => handleOpenModal("profile")}
                     className='h-[60px] w-[60px] rounded-full bg-white cursor-pointer'>
-                
+                        <img
+                            src={user?.avatar?.url}
+                            className='h-full w-full rounded-full'
+                        />
                 </div>
                 <div className='text-white flex flex-col gap-8 items-center mt-20'>
                     <div onClick={() => setCurrentTab("messages")}

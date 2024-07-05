@@ -1,10 +1,23 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
 
 const UserProfile = () => {
+    const {user} = useSelector((state) => state.auth)
+    const [userDetails, setUserDetails] = useState({
+        name : user?.name,
+        username : user?.username,
+        email : user?.email,
+        bio : user?.bio,
+        dateOfBirth : user?.dateOfBirth,
+        gender:  user?.gender
+    })
   return (
     <div className="flex flex-col items-center  py-8 px-14 w-[700px] bg-white outline-none rounded-md shadow-custom">
         <div className='h-[200px] w-[200px] rounded-full bg-black'>
-
+            <img
+                src={user?.avatar?.url}
+                className='w-full h-full rounded-full'
+            />
         </div>
 
         <div className='w-full mt-8'>
@@ -14,7 +27,7 @@ const UserProfile = () => {
                  <input
                     type='text'
                     name='name'
-                    value = "Nilesh patidar"
+                    value = {userDetails?.name}
                     className='py-2 px-4 bg-[#E5E8ED] rounded-[4px] outline-none placeholder:font-light w-full'
                  />
              </div>
@@ -24,7 +37,7 @@ const UserProfile = () => {
                     disabled
                     type='text'
                     name='username'
-                    value = "nileshp07"
+                    value = {userDetails?.username}
                     className='py-2 px-4 bg-[#E5E8ED] rounded-[4px] outline-none placeholder:font-light w-full'
                  />
              </div>
@@ -34,7 +47,7 @@ const UserProfile = () => {
                  <input
                     type='email'
                     name='email'
-                    value = "patidarnilesh8120@gmail.com"
+                    value = {userDetails?.email}
                     className='py-2 px-4 bg-[#E5E8ED] rounded-[4px] outline-none placeholder:font-light w-full'
                  />
              </div>
@@ -44,10 +57,7 @@ const UserProfile = () => {
                     cols="10"
                     className='py-2 px-4 h-[70px] bg-[#E5E8ED] rounded-[4px] outline-none placeholder:font-light w-full'
                  >
-                    my name is nilesh patidar and i am Full Stack Developer
-                    my name is nilesh patidar and i am Full Stack Developer
-                    my name is nilesh patidar and i am Full Stack Developer
-                    my name is nilesh patidar and i am Full Stack Developer
+                    {userDetails?.bio}
                  </textarea>
              </div>
  
@@ -57,7 +67,7 @@ const UserProfile = () => {
                     <input
                         type='text'
                         name='gender'
-                        value = "Male"
+                        value = {userDetails?.gender}
                         className='py-2  px-4 bg-[#E5E8ED] rounded-[4px] outline-none placeholder:font-light'
                     />
                 </div>
@@ -66,7 +76,7 @@ const UserProfile = () => {
                     <input
                         type='text'
                         name='DOB'
-                        value = "16/08/2003"
+                        value = {userDetails?.dateOfBirth}
                         className='py-2 px-4 bg-[#E5E8ED] rounded-[4px] outline-none placeholder:font-light w-full'
                     />
                 </div>
