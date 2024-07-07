@@ -17,6 +17,7 @@ import Message from "./models/Message.js";
 
 import userRoutes from "./routes/user.js"
 import chatRoutes from "./routes/chats.js"
+import { socketAuthenticator } from "./middlewares/auth.js";
 
 
 dotenv.config();
@@ -25,7 +26,13 @@ const PORT = process.env.PORT || 4000;
 
 const app = express();
 const server = createServer(app)
-const io = new Server(server, {});
+const io = new Server(server, {
+    path: '/socket.io',
+    cors: {
+        origin:  ["http://localhost:5173", process.env.CLIENT_URL], // Frontend URL
+        credentials: true
+    }
+});
 const userSocketIdsMap = new Map();
 
 
@@ -52,16 +59,15 @@ app.use(errorMiddleware);  //make sure to use this middleware at last
 
 
 
+// Using namespace '/api/v1'  -> bcz from backend we are sending the request form url/api/v1 that why we are like appending /api/v1 here
+const namespace = io.of('/api/v1');
 
+namespace.use((socket , next) => socketAuthenticator(socket, next)); // socket middlware
 
-
-io.on("connection" , (socket) => {
+namespace.on("connection" , (socket) => {
     console.log("a user is connected" , socket.id)
 
-    const user = {
-        _id : "3i29i9239",
-        name : "user1"
-    }
+    const user = socket.user;
 
     userSocketIdsMap.set(user._id.toString() , socket.id)  //mapping all the connected user'id to their socket
 

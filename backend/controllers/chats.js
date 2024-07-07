@@ -40,8 +40,6 @@ export const getUserAllChats = async (req,res, next) => {
     try{
         const userId = req.user._id;
 
-        console.log(userId);
-
         const allChats = await Chat.find({members: userId})
                                                 .populate("members",
                                                     "avatar name"     // selecting the field from populated

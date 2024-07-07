@@ -4,12 +4,12 @@ import Sidebar from '../components/Sidebar'
 import Messages from '../components/Messages'
 import { Outlet } from 'react-router-dom'
 import {server_url} from "../constants/envConfig"
+import { getSocket } from '../sockets'
 
 const Home = () => {
 
-  useEffect(() => {
-    
-  }, [])
+  const socket = getSocket();
+  console.log(socket)
   return (
     <div className='flex w-full'>
         <Sidebar/>

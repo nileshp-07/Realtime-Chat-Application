@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken"
+import User from "../models/User.js";
 
 const isAuthenticated = (req, res, next) => {
     const token = req.cookies.token ||
@@ -12,7 +13,6 @@ const isAuthenticated = (req, res, next) => {
             message : "Token is not found, please login first"
         })
     }
-    console.log(token);
 
     const decodedPayload = jwt.verify(token, process.env.JWT_SECRET);
 
@@ -20,5 +20,31 @@ const isAuthenticated = (req, res, next) => {
     next();
 }
 
+const socketAuthenticator = async (socket, next) => {
+    try{
+        console.log("REACH TO MIDDLEWARE")
+        const token = socket.handshake.auth.token;
 
-export {isAuthenticated};   //another way to export
+        if(!token)
+            return next({message: "Please login to access this route", status: 401});
+
+        const decodedData = jwt.verify(token , process.env.JWT_SECRET)
+
+        const user = await User.findById(decodedData._id)
+
+        if(!user)
+            return next({message: "Please login to access this route", status: 401});
+
+        socket.user = user;
+
+        next();
+    }
+    catch(err)
+    {
+        console.log(err);
+        return next(new ErrorHandler("Could not authenticate the socket", 401));
+    }
+}
+
+
+export {isAuthenticated, socketAuthenticator};   //another way to export
