@@ -91,24 +91,24 @@ namespace.on("connection" , (socket) => {
         const membersSocketIDs = getSockets(members);  //get all the socketIds of members from the UserSocketIDsMap
         console.log(membersSocketIDs);
 
-        io.to(membersSocketIDs).emit(NEW_MESSAGE , {   // send the message to all the members on their UI
+        namespace.to(membersSocketIDs).emit(NEW_MESSAGE , {   // send the message to all the members on their UI
           chatId,
           message : messageForRealTime
         })
 
-        io.to(members).emit(NEW_MESSAGE_ALERT , {chatId}) //new message alert notification for the chat
+        namespace.to(members).emit(NEW_MESSAGE_ALERT , {chatId}) //new message alert notification for the chat
 
-        // try{
-        //     await Message.create({
-        //         content : message,
-        //         sender : user._id,
-        //         chat: chatId
-        //     })
-        // }
-        // catch(err)
-        // {
-        //     throw new Error(err);
-        // }
+        try{
+            await Message.create({
+                content : message,
+                sender : user._id,
+                chat: chatId
+            })
+        }
+        catch(err)
+        {
+            throw new Error(err);
+        }
     })
 
 

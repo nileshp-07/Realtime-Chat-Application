@@ -17,11 +17,11 @@ const App = () => {
      <BrowserRouter>
         <div className='flex font-sans max-h-screen overflow-hidden'>
             <Routes>
-               <Route element={
-                  <SocketProvider>
-                      <Home/>
-                  </SocketProvider>
-               }>
+               <Route element={(
+               <SocketProvider>
+                  <Home />
+               </SocketProvider>
+               )}>
                   <Route path="/chat/:id" element={<Messages/>}/>
                   <Route path="/" element={<h1>Please select chat to message</h1>}/>
                   <Route path="chat-info/:id" element={<ChatInfo/>}/>

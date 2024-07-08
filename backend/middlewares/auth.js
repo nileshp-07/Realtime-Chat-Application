@@ -22,7 +22,6 @@ const isAuthenticated = (req, res, next) => {
 
 const socketAuthenticator = async (socket, next) => {
     try{
-        console.log("REACH TO MIDDLEWARE")
         const token = socket.handshake.auth.token;
 
         if(!token)
