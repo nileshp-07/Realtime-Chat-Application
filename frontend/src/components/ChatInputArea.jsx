@@ -12,6 +12,7 @@ const ChatInputArea = ({message, setMessage, sendMessageHandler}) => {
             <div className=' w-full'>
                 <form>
                     <input
+                        autoFocus
                         type='text'
                         placeholder='Type a message'
                         className='w-full outline-none'
@@ -21,11 +22,12 @@ const ChatInputArea = ({message, setMessage, sendMessageHandler}) => {
                 </form>
             </div>
         </div>
-        <div 
+        <button
+        type='submit' 
         onClick={sendMessageHandler}
         className='p-3 cursor-pointer rounded-full bg-[#fd4f50]'>
             <RiSendPlaneFill size={24} fill='white'/>
-        </div>
+        </button>
     </div>
   )
 }

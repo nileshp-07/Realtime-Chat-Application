@@ -79,7 +79,7 @@ namespace.on("connection" , (socket) => {
 
         const messageForRealTime = {  //message to send on frontend
             content: message,
-            // _id: uuid(),
+            _id: uuid(),
             sender : {
                 _id: user._id,
                 name:  user.name
