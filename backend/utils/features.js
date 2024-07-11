@@ -6,3 +6,11 @@ export const getSockets = (users = []) => {
   
     return sockets;
   };
+
+
+export const emitEvent = (req ,event, users, data) => {
+    const io = req.app.get("io");  //we have set the instance of io in index.js
+    const usersSocketIDS = getSockets(users);
+
+    io.to(usersSocketIDS).emit(event, data);
+}

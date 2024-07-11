@@ -4,16 +4,21 @@ import { MdOutlineDone } from "react-icons/md";
 import { MdOutlineDoneAll } from "react-icons/md";
 import { server_url } from '../constants/envConfig';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import FileMenuDialog from '../components/FileMenuDialog';
 
 
 const Chats = () => {
   const {token} = useSelector((state) => state.auth)
+  const {id : chatId} = useParams();
   const [isFriendTab, setIsFriendTab] = useState(true);
   const [friendsChats, setFriendChats] = useState([]);
   const [groupsChats, setGroupsChats] = useState([]);
   const [loading , setLoading] = useState(false);
+  const {newMessageAlert} = useSelector((state) => state.chat);
+  const hasMessageAlert = newMessageAlert.find((item) => item.chatId === chatId);
 
+  console.log("has message alert : ", hasMessageAlert);
 
   const fetchAllChatsHandler = async () => {
      setLoading(true);
@@ -66,7 +71,8 @@ const Chats = () => {
           </div>
        </div>
 
-       <div className='flex flex-col h-full overflow-y-scroll'>
+
+       <div className='flex flex-col max-h-screen overflow-y-scroll'>
         {
             isFriendTab && (
               friendsChats.map((chat) => (
@@ -86,6 +92,11 @@ const Chats = () => {
                             <p>hii</p>
                             <MdOutlineDoneAll/>
                           </div>
+                          <div>
+                          {
+                             hasMessageAlert?.count > 0 && `${hasMessageAlert?.count} new messages`
+                          }
+                        </div>
                         </div>
                     </div>
                 </Link>
@@ -107,12 +118,18 @@ const Chats = () => {
                           <h2 className='font-medium font-sans'>{chat?.name}</h2>
                           <p>hii</p>
                         </div>
+                        <div>
+                          {
+                             hasMessageAlert?.count > 0 && `${hasMessageAlert?.count} new messages`
+                          }
+                        </div>
                     </div>
                  </Link>
               ))
             )
         }
        </div>
+
 
        
        

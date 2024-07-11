@@ -1,6 +1,8 @@
 import Chat from "../models/Chat.js"
 import User from "../models/User.js";
 import Message from "../models/Message.js"
+import { emitEvent } from "../utils/features.js";
+import { NEW_ATTACHMENT, NEW_MESSAGE } from "../constants/events.js";
 
 export const newGroupChat = async (req, res, next) => {
     try{
@@ -199,6 +201,9 @@ export const sendAttachments = async(req, res, next) => {
 
         const files = req.files || [];
 
+        // console.log("Reached");
+        // console.log(files);
+
         if(files.length < 1)  return next({message: "Attachment Not found" , status: 404});
 
         const [user, chat] = await Promise.all([
@@ -214,10 +219,7 @@ export const sendAttachments = async(req, res, next) => {
                public_id : "attachment1",
                url : "attachment1"
             }, 
-            {
-               public_id : "attachment2",
-               url : "attachment2"
-            }];
+           ];
 
         const message  = await Message.create({
             content: "", //no content in case of attachments
@@ -226,20 +228,26 @@ export const sendAttachments = async(req, res, next) => {
             attachments : attachmentLinks
         })
 
-        const messageForRes = {
-            ...message,
+        console.log(message);
+        const messageForRealtime = {
+            message,
             sender: {
                 _id: user._id,
                 name : user.name
             }
         }
 
+        emitEvent(req , NEW_MESSAGE , chat.members, messageForRealtime);
+
+        emitEvent(req ,NEW_MESSAGE_ALERT, chat.members, {chatId})
+
+
         // eventEmitter function to be added 
 
         return res.status(200).json({
             success: true,
             message : "Attachments sent successfully",
-            messageForRes
+            messageForRealtime
         })
     }
     catch(err)

@@ -3,10 +3,11 @@ import { useSelector } from 'react-redux';
 import moment from "moment"
 
 const MessageComponent = ({message}) => {
+    // console.log("message",message);
     const {sender, content, attachments=[] , createdAt} = message;
     const {user} = useSelector((state) => state.auth)
 
-    const isSameSender = user._id === sender._id;
+    const isSameSender = user._id === sender._id; 
     const timeAgo = moment(createdAt).fromNow();
 
    return (
@@ -18,8 +19,8 @@ const MessageComponent = ({message}) => {
                     content ? (
                         <p>{content}</p>
                     ) : (
-                        attachments.map((attachment) => (
-                            <div>ATTACHMENT</div>
+                        attachments.map((attachment, index) => (
+                            <div key={index}>{attachment.url}</div>
                         ))
                     )
                 }

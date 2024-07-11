@@ -1,6 +1,8 @@
 import { Request } from "../models/Request.js";
 import User from "../models/User.js";
 import Chat from "../models/Chat.js"
+import { emitEvent } from "../utils/features.js";
+import { NEW_REQUEST } from "../constants/events.js";
 
 export const searchUser = async (req, res) => {
     try{
@@ -65,6 +67,8 @@ export const sendRequest = async (req , res, next) => {
 
 
         // eventEmitter function to be added 
+        emitEvent(req, NEW_REQUEST ,[receiverId])
+
 
 
         return res.status(200).json({

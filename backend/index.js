@@ -7,7 +7,7 @@ import dotenv from "dotenv"
 import connectDB from "./utils/db.js";
 import { errorMiddleware } from "./middlewares/errorHandler.js";
 import cookieParser from "cookie-parser";
-import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "./constants/events.js";
+import { NEW_MESSAGE, NEW_MESSAGE_ALERT, START_TYPING, STOP_TYPING } from "./constants/events.js";
 import { v4 as uuid } from "uuid";
 import { getSockets } from "./utils/features.js";
 import Message from "./models/Message.js";
@@ -61,6 +61,7 @@ app.use(errorMiddleware);  //make sure to use this middleware at last
 
 // Using namespace '/api/v1'  -> bcz from backend we are sending the request form url/api/v1 that why we are like appending /api/v1 here
 const namespace = io.of('/api/v1');
+app.set("io", namespace); // set the io instance of access in other functions
 
 namespace.use((socket , next) => socketAuthenticator(socket, next)); // socket middlware
 
@@ -96,7 +97,7 @@ namespace.on("connection" , (socket) => {
           message : messageForRealTime
         })
 
-        namespace.to(members).emit(NEW_MESSAGE_ALERT , {chatId}) //new message alert notification for the chat
+        namespace.to(membersSocketIDs).emit(NEW_MESSAGE_ALERT , {chatId}) //new message alert notification for the chat
 
         try{
             await Message.create({
@@ -111,6 +112,16 @@ namespace.on("connection" , (socket) => {
         }
     })
 
+    socket.on(START_TYPING, async({members, chatId}) => {
+        const membersSocketsIDs = getSockets(members);
+        namespace.to(membersSocketsIDs).emit(START_TYPING, { chatId });
+    } )
+
+    socket.on(STOP_TYPING, async ({members, chatId}) => {
+        const membersSocketIDs = getSockets(members);
+
+        namespace.to(membersSocketIDs).emit(STOP_TYPING, {chatId});
+    })
 
     socket.on("disconnect" , () => {
         console.log("user disconnected")

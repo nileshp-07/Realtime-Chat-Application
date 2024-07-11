@@ -18,6 +18,7 @@ import toast from "react-hot-toast"
 
 const Sidebar = () => {
     const [currentTab,setCurrentTab] = useState("messages");
+    const {notificationsCount} = useSelector((state) => state.chat)
     const {token} = useSelector((state) => state.auth) 
     const {user} = useSelector((state) => state.auth) 
     const [open, setOpen] = React.useState(false);
@@ -81,10 +82,13 @@ const Sidebar = () => {
                       className={`${currentTab === "addGroup" && "text-[#fd4f50]"} cursor-pointer`}>
                         <MdOutlineGroupAdd  size={24}/>
                     </div>
-                    <div 
+                    <div className='relative'>
+                     <div className='absolute top-[-3px] bg-[#fd4f50] h-[15px] w-[15px] rounded-full flex items-center justify-center text-xs' >{notificationsCount}</div>
+                     <div 
                       onClick={() => handleOpenModal("notifications")}
                       className={`${currentTab === "notifications" && "text-[#fd4f50]"} cursor-pointer`}>
                         <IoNotificationsOutline  size={24}/>
+                    </div>
                     </div>
                 </div>
             </div>

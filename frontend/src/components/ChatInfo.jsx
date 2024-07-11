@@ -1,12 +1,75 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { IoArrowBack } from "react-icons/io5";
 import Modal from '@mui/material/Modal';
 import AddMembers from './AddMembers';
-
+import axios from "axios"
+import { useParams } from 'react-router-dom';
+import {server_url} from "../constants/envConfig"
+import toast from "react-hot-toast"
+import { useSelector } from 'react-redux'
+import { BsFillPencilFill } from "react-icons/bs";
+import { FaCheck } from "react-icons/fa";
 
 const ChatInfo = () => {
     const [isGroup, setIsGroup] = useState(true);
-    const [open, setOpen] = React.useState(false);
+    const {id : chatId} = useParams();
+    const [open, setOpen] = useState(false);
+    const [chatDetails , setChatDetail] = useState("");
+    const [loading , setLoading] = useState(false);
+    const {token} = useSelector((state) => state.auth)
+    const [isRenameGroup, setIsRenameGroup] = useState(false);
+
+    const getChatDetails = async() => {
+        setLoading(true);
+        try{        
+            const res = await axios.get(`${server_url}/chat/${chatId}`,{
+                headers:{
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            setIsGroup(res?.data?.chatDetails?.isGroup)
+
+            console.log("CHAT DETAILS :  ",res);
+
+            setChatDetail(res?.data?.chatDetails);
+        }   
+        catch(err)
+        {
+            console.error(err);
+            toast.error(err.response.data.message || "Something went wrong");
+        }
+        setLoading(false);
+    }
+
+
+    const changeGroupNameHandler = async () => {
+        setIsRenameGroup(false);
+        setLoading(true)
+        const toastId = toast.loading("Renaming group name")
+        try{
+            await axios.put(`${server_url}/chat/${chatId}`,{newName: chatDetails?.name},{
+                headers:{
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            toast.success("Group name changed");
+
+        }
+        catch(err)
+        {
+            console.error(err);
+            toast.error(err.response.data.message || "Something went wrong");
+        }
+        toast.dismiss(toastId);
+        setLoading(false);
+    }
+
+    useEffect(() => {
+        getChatDetails();
+    }, [])
+
   return (
     <div className='mx-5 my-5 w-full overflow-auto'>
         <div>
@@ -18,10 +81,41 @@ const ChatInfo = () => {
 
             </div>
 
-            <div className='mt-5 flex flex-col items-center'>
-                <p className='text-lg font-medium'>Nilesh Patidar</p>
-                <p>nileshp07</p>
-            </div>
+            {
+                !isGroup ? (
+                <div className='mt-5 flex flex-col items-center'>
+                    <p className='text-lg font-medium'>Nilesh Patidar</p>
+                    <p>nileshp07</p>
+                </div>
+                ) : (
+
+                    <div className='flex items-center gap-[-15px] mt-5 '>
+                        <input
+                            disabled={!isRenameGroup}
+                            type='text'
+                            value={chatDetails?.name}
+                            onChange={(e) => {
+                                setChatDetail(prev => (
+                                    {
+                                        ...prev,
+                                        name : e.target.value
+                                    }
+                                ))
+                            }}
+                            className='text-2xl font-semibold bg-white  w-fit  inline-block outline-none'
+                            style={{ width: `${chatDetails?.name?.length }ch` }}
+                        />
+                        {
+                            isRenameGroup ? (
+                                <FaCheck onClick={changeGroupNameHandler}/>
+                            ) : (
+                                <BsFillPencilFill size={20} onClick={() => setIsRenameGroup(true)} className='ml-[-10px]' />
+                            )
+                        }
+                    </div>
+                )
+                
+            }
         </div>
 
         <div className='w-[80%] mt-20 mx-auto'>
@@ -57,18 +151,15 @@ const ChatInfo = () => {
                     </div>
                    <div className='flex flex-col gap-5 mt-5'>
                       {
-                        Array.from({ length: 20 }).map((item,index) => (
-                            <div className='flex justify-between border rounded-md py-[6px] px-3 '>
+                        chatDetails?.members?.map((member) => (
+                            <div className='flex justify-between border rounded-md py-[6px] px-3 ' key={member._id}>
                                 <div className='flex gap-3'>
                                     <div className='h-[44px] w-[44px] bg-black rounded-full'></div>
                                     <div>
-                                        <h2 className='font-medium font-sans'>Nilesh Patidar</h2>
-                                        <p className='text-sm -mt-1'>nileshp07</p>
+                                        <h2 className='font-medium font-sans'>{member?.name}</h2>
+                                        <p className='text-sm -mt-1'>{member?.username}</p>
                                     </div>
                                 </div>  
-                                <div>
-                                    May 2024
-                                </div>
                             </div>
                         ))
                       }
