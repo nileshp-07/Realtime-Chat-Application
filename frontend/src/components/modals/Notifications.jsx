@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { RxCross2 } from "react-icons/rx";
 import { IoMdCheckmark } from "react-icons/io";
-import {server_url} from "../constants/envConfig"
+import {server_url} from "../../constants/envConfig"
 import axios  from "axios";
 import toast from "react-hot-toast"
 import { useSelector } from 'react-redux';

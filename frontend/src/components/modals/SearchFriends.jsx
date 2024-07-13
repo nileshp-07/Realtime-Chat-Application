@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { FiSearch } from "react-icons/fi";
-import AddFriend from './AddFriend';
+import AddFriend from '../AddFriend';
 import toast from "react-hot-toast"
-import { server_url } from '../constants/envConfig';
+import { server_url } from '../../constants/envConfig';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 

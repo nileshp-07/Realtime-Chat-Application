@@ -18,6 +18,7 @@ import Message from "./models/Message.js";
 import userRoutes from "./routes/user.js"
 import chatRoutes from "./routes/chats.js"
 import { socketAuthenticator } from "./middlewares/auth.js";
+import Chat from "./models/Chat.js";
 
 
 dotenv.config();
@@ -100,11 +101,16 @@ namespace.on("connection" , (socket) => {
         namespace.to(membersSocketIDs).emit(NEW_MESSAGE_ALERT , {chatId}) //new message alert notification for the chat
 
         try{
-            await Message.create({
+            const messageCreated = await Message.create({
                 content : message,
                 sender : user._id,
                 chat: chatId
             })
+
+            await Chat.findByIdAndUpdate(chatId, {
+                lastMessage: messageCreated._id
+            })
+
         }
         catch(err)
         {

@@ -21,13 +21,14 @@ export const searchUser = async (req, res) => {
 
 
         // Extract IDs of current user's friends
-        // const friendIds = user.friends.map(friend => friend.toString());
-        const friendIds =  ["6675be50049b5866568c5416", "6676fc9ea01103f57a9c2294"]
+        const friendIds = user.friends.map(friend => friend.toString());
         
 
+        
         const users = searchResult.filter((user) => (
             user._id.toString() !== userId.toString()  && !friendIds.includes(user._id.toString())
         ))
+
 
         return res.status(200).json({
             success: true,
@@ -180,7 +181,7 @@ export const getMyNotifications = async (req, res , next) => {
 
 
 
-export const myFriends = async (req, res) => {
+export const myFriends = async (req, res, next) => {
     try{
         const userId = req.user._id;
 

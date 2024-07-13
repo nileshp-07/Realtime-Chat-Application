@@ -18,7 +18,8 @@ const chatSchema = new Schema({
         ref : "User"
     }],
     lastMessage : {
-        type: String
+        type: Schema.Types.ObjectId,
+        ref : "Message"
     }
 },
 {

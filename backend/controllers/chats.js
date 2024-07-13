@@ -9,6 +9,8 @@ export const newGroupChat = async (req, res, next) => {
         const {name, members} = req.body;
         const userId = req.user._id;
 
+        console.log(name, members, userId);
+
         if(members.length < 2)  return next({message: "min 3 member required to create group", status : 402});
 
         const allMembers = [...members, userId];
@@ -45,7 +47,8 @@ export const getUserAllChats = async (req,res, next) => {
         const allChats = await Chat.find({members: userId})
                                                 .populate("members",
                                                     "avatar name"     // selecting the field from populated
-                                                );
+                                                ).
+                                                populate("lastMessage");
         
         return res.status(200).json({
             success: false,
@@ -63,6 +66,8 @@ export const getUserAllChats = async (req,res, next) => {
 
 export const addMembers = async (req, res, next) => {
     try{
+
+        console.log("REACHED");
         const {chatId, members} = req.body;
         const userId = req.user._id;
 
@@ -148,7 +153,9 @@ export const removeMember = async (req, res, next) => {
 
 export const leaveGroup = async (req, res, next) => {
     try{
-        const {chatId, userId} = req.body;
+        const {chatId} = req.body;
+
+        const userId= req.user._id;
 
         console.log(chatId, "  ", userId)
 
@@ -261,10 +268,16 @@ export const sendAttachments = async(req, res, next) => {
 export const getChatDetails = async (req, res, next) => {
     try{
         const chatId = req.params.id;
+        const userId = req.user._id;
 
         const chatDetails = await Chat.findById(chatId).populate("members").exec();
 
         if(!chatDetails) return next({message: "Chat not found", status: 404});
+
+        const isMember = chatDetails.members.some(member => member._id.toString() === userId.toString());
+        if (!isMember) {
+            return next({ message: "User is not a member of this chat", status: 403 });
+        }
 
         return res.status(200).json({
             success : true,
@@ -380,7 +393,6 @@ export const getChatMessages = async (req, res , next) => {
         if(!chat) return next({message: "Chat not found", status: 404});
 
         if(!chat.members.includes(req.user._id.toString()))  return next({message: "You are not allowed to access this chat", status: 401});
-
 
         const [messages, totalMessagesCount] = await Promise.all([
             Message.find({chat: chatId})

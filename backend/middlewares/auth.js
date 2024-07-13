@@ -4,7 +4,7 @@ import User from "../models/User.js";
 const isAuthenticated = (req, res, next) => {
     const token = req.cookies.token ||
                     req.body.token  ||
-                    req.header("Authorization").replace("Bearer ", "");
+                    req?.header("Authorization")?.replace("Bearer ", "");
 
 
     if(!token){

@@ -137,6 +137,7 @@ const Login = () => {
                     required
                     type='text'
                     name='name'
+                    disabled={isLoading}
                     onChange={handleSignupDataChange}
                     placeholder='Enter your name'
                     value={signupData?.name}
@@ -152,6 +153,7 @@ const Login = () => {
                 required
                 type='text'
                 name='username'
+                disabled={isLoading}
                 onChange={isLogin ? handleLoginDataChange : handleSignupDataChange}
                 placeholder='Enter your username'
                 value={signupData?.username || loginData?.username}
@@ -164,6 +166,7 @@ const Login = () => {
               <div className='relative w-full'>
                 <input
                   required
+                  disabled={isLoading}
                   type={showPassword ? "text" : "password"}
                   name='password'
                   onChange={isLogin ? handleLoginDataChange : handleSignupDataChange}
@@ -187,6 +190,7 @@ const Login = () => {
                   <div className='relative w-full'>
                     <input
                       required
+                      disabled={isLoading}
                       type={showConfirmPassword ? "text" : "password"}
                       name='confirmPassword'
                       onChange={handleSignupDataChange}
@@ -205,12 +209,15 @@ const Login = () => {
                )
             }
 
-            <button onClick={isLogin ? loginHandler : signupHandler}
-                  className='text-white py-2 px-5 w-full rounded-md bg-[#fd4f50] mt-10 font-medium'>
+            <button 
+            disabled={isLoading}
+            onClick={isLogin ? loginHandler : signupHandler}
+                  className={`text-white py-2 px-5 w-full rounded-md ${isLoading ? "bg-[#FF6667]" : "bg-[#fd4f50]"}  mt-10 font-medium`}>
               {
                  isLogin ? "Login" : "Create Account"
               }
             </button>
+
             <p className='flex justify-center gap-1'>or <span className='cursor-pointer text-[#fd4f50]' onClick={() => setisLogin(!isLogin)}>{isLogin ? " Register" : "Login"}</span>instead</p>
          </form>
       </div>

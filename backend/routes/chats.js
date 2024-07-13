@@ -13,7 +13,7 @@ router.post("/new-group", newGroupChat);
 router.get("/all-chats", getUserAllChats);
 router.put("/add-members", addMembers);
 router.put("/remove-member", removeMember);
-router.delete("/leave", leaveGroup);
+router.put("/leave", leaveGroup);
 router.post("/send-attachments", attachmentMulter, sendAttachments);
 router.get("/messages/:id", getChatMessages);
 

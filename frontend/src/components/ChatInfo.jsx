@@ -6,9 +6,10 @@ import axios from "axios"
 import { useParams } from 'react-router-dom';
 import {server_url} from "../constants/envConfig"
 import toast from "react-hot-toast"
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { BsFillPencilFill } from "react-icons/bs";
 import { FaCheck } from "react-icons/fa";
+import { setIsNewGroup } from '../redux/slices/chatSlice';
 
 const ChatInfo = () => {
     const [isGroup, setIsGroup] = useState(true);
@@ -18,6 +19,8 @@ const ChatInfo = () => {
     const [loading , setLoading] = useState(false);
     const {token} = useSelector((state) => state.auth)
     const [isRenameGroup, setIsRenameGroup] = useState(false);
+    const [newMembers, setNewMembers] = useState([]);
+    const dispatch = useDispatch();
 
     const getChatDetails = async() => {
         setLoading(true);
@@ -41,6 +44,70 @@ const ChatInfo = () => {
         }
         setLoading(false);
     }
+
+
+    const handleAddMember = async() => {
+        if(newMembers.length === 0) return;
+
+        setLoading(true);
+
+        try{
+            const res = await axios.put(`${server_url}/chat/add-members`, {chatId, members: newMembers}, {
+                headers:{
+                    Authorization: `Bearer ${token}`
+                }
+            })
+
+            toast.success("Members add to group");
+        }
+        catch(err)
+        {
+            console.error(err);
+            toast.error(err.response.data.message || "Something went wrong");
+        }
+        setLoading(false);
+    }
+
+
+    const handleRemoveMembers =  async(memberId) => {
+        setLoading(true);
+
+        try{
+            const res = await axios.put(`${server_url}/chat/remove-member`, {chatId, memberId}, {
+                headers:{
+                    Authorization: `Bearer ${token}`
+                }
+            })
+
+            toast.success("Member removed from group");
+        }
+        catch(err)
+        {
+            console.error(err);
+            toast.error(err.response.data.message || "Something went wrong");
+        }
+        setLoading(false);
+    }
+
+    const handleExitGroup = async() => {
+        setLoading(true);
+        try{
+            await axios.put(`${server_url}/chat/leave`,{chatId},{
+                headers:{
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            toast.success("Group Exited");
+        }
+        catch(err)
+        {
+            console.error(err);
+            toast.error(err.response.data.message || "Something went wrong");
+        }
+        setLoading(false);
+    }
+
 
 
     const changeGroupNameHandler = async () => {
@@ -144,7 +211,10 @@ const ChatInfo = () => {
                    <div className='flex justify-between items-center'>
                     <p className='font-medium'>Group members</p>
                     <button 
-                      onClick={() => setOpen(true)}
+                      onClick={() => {
+                        setOpen(true);
+                        dispatch(setIsNewGroup(false))
+                      }}
                       className='py-2 px-5 bg-[#fd4f50] text-white rounded-md '>
                             Add Members
                         </button>
@@ -154,18 +224,28 @@ const ChatInfo = () => {
                         chatDetails?.members?.map((member) => (
                             <div className='flex justify-between border rounded-md py-[6px] px-3 ' key={member._id}>
                                 <div className='flex gap-3'>
-                                    <div className='h-[44px] w-[44px] bg-black rounded-full'></div>
+                                    <div className='h-[44px] w-[44px] bg-black rounded-full'>
+                                        <img
+                                            src={member?.avatar?.url}
+                                            className='rounded-full'
+                                        />
+                                    </div>
                                     <div>
                                         <h2 className='font-medium font-sans'>{member?.name}</h2>
                                         <p className='text-sm -mt-1'>{member?.username}</p>
                                     </div>
                                 </div>  
+
+                                <div onClick={() => handleRemoveMembers(member._id)}>
+                                    remove
+                                </div>
                             </div>
                         ))
                       }
                    </div>
                    <div className='my-4 flex justify-end '>
-                     <div className='mt-2 text-[#fd4f50] py-2 px-5 rounded-md border border-[#fd4f50]'>
+                     <div onClick={handleExitGroup}
+                     className='mt-2 text-[#fd4f50] py-2 px-5 rounded-md border border-[#fd4f50]'>
                         Exit Group
                      </div>
                    </div>
@@ -185,9 +265,11 @@ const ChatInfo = () => {
         >
         <div className="absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 outline-none py-8 px-14 w-[600px] bg-white rounded-md shadow-custom">
            <p className='font-medium font-sans mb-5'>Add Members</p>
-           <AddMembers/>
+           <AddMembers members={newMembers} setMembers={setNewMembers} groupMembers={chatDetails?.members}/>
           <div className='mt-5 flex justify-end'>
-            <button  className='py-2 px-5 bg-[#fd4f50] text-white rounded-md '>
+            <button 
+            onClick={handleAddMember}
+             className='py-2 px-5 bg-[#fd4f50] text-white rounded-md '>
                 Add 
             </button>
           </div>

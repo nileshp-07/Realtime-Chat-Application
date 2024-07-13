@@ -280,7 +280,7 @@ import { useParams } from 'react-router-dom';
 import { server_url } from "../constants/envConfig";
 import toast from 'react-hot-toast';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getSocket } from '../sockets';
 import { NEW_MESSAGE, START_TYPING, STOP_TYPING } from "../constants/events";
 import { useSocketEvents } from '../hooks/hooks';
@@ -288,6 +288,7 @@ import MessageComponent from './MessageComponent';
 import FileMenuDialog from './FileMenuDialog';
 import { GrAttachment } from "react-icons/gr";
 import { RiSendPlaneFill } from "react-icons/ri";
+import { setIsFileMenuOpen } from '../redux/slices/tabSlice';
 
 const Messages = () => {
   const socket = getSocket();
@@ -307,6 +308,7 @@ const Messages = () => {
   const [userTyping , setUserTyping] = useState(false);
   const typingTimeOut = useRef(null);
   const bottomRef = useRef(null);
+  const dispatch = useDispatch();
 
 
 

@@ -6,7 +6,8 @@ const initialState = {
     newMessageAlert :[{
         chatId: "",
         count : 0
-    }]
+    }],
+    isNewGroup : true
 }
 
 const chatSlice = createSlice({
@@ -32,10 +33,14 @@ const chatSlice = createSlice({
             else{
                 state.newMessageAlert[index].count++;
             }
+        },
+
+        setIsNewGroup : (state, action) => {
+            state.isNewGroup = action.payload;
         }
     }
 })
 
 
 export default chatSlice;
-export const {setNotificationsCount, setNewMessageAlert} = chatSlice.actions
+export const {setNotificationsCount, setNewMessageAlert, setIsNewGroup} = chatSlice.actions
