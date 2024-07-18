@@ -10,9 +10,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { BsFillPencilFill } from "react-icons/bs";
 import { FaCheck } from "react-icons/fa";
 import { setIsNewGroup } from '../redux/slices/chatSlice';
+import UnFriend from './modals/UnFriend';
+import { setIsUsfriendOpen } from '../redux/slices/tabSlice';
 
 const ChatInfo = () => {
     const [isGroup, setIsGroup] = useState(true);
+    const {user} = useSelector((state) => state.auth)
+    const {isUnfriendOpen} = useSelector((state) => state.tab);
     const {id : chatId} = useParams();
     const [open, setOpen] = useState(false);
     const [chatDetails , setChatDetail] = useState("");
@@ -137,6 +141,11 @@ const ChatInfo = () => {
         getChatDetails();
     }, [])
 
+    
+  const getOtherMember = (friend) => {
+    return friend?.members?.find((member) => member._id !== user._id);
+  }
+
   return (
     <div className='mx-5 my-5 w-full overflow-auto'>
         <div>
@@ -151,8 +160,8 @@ const ChatInfo = () => {
             {
                 !isGroup ? (
                 <div className='mt-5 flex flex-col items-center'>
-                    <p className='text-lg font-medium'>Nilesh Patidar</p>
-                    <p>nileshp07</p>
+                    <p className='text-lg font-medium'>{getOtherMember(chatDetails)?.name}</p>
+                    <p>{getOtherMember(chatDetails)?.username}</p>
                 </div>
                 ) : (
 
@@ -189,16 +198,29 @@ const ChatInfo = () => {
         {
             !isGroup && (
                 <div>
-                    <div className='flex items-center gap-5'>
-                        <p className='font-medium'>Email Add:</p>
-                        <div className='bg-[#E5E8ED] py-2 px-4 rounded-[4px] outline-none w-fit'>patidarnilesh@gmail.com</div>
-                    </div>
-                    <div className='flex items-center gap-5 mt-5'>
-                        <p className='font-medium'>About me:</p>
-                        <div className='bg-[#E5E8ED] py-2 px-4 rounded-[4px] outline-none w-[70%]'>i am nilesh patidar and i am a passoninate mern stack developer pursing Btech computer science enginnerings</div>
-                    </div>
+                    {
+                        getOtherMember(chatDetails).email && (
+                            <div className='flex items-center gap-5'>
+                                <p className='font-medium'>Email Add:</p>
+                                <div className='bg-[#E5E8ED] py-2 px-4 rounded-[4px] outline-none w-fit'>{getOtherMember(chatDetails).email}</div>
+                            </div>
+                        )
+                    }
+
+                    {
+                        getOtherMember(chatDetails)?.bio && (
+                            <div className='flex items-center gap-5 mt-5'>
+                                <p className='font-medium'>About me:</p>
+                                <div className='bg-[#E5E8ED] py-2 px-4 rounded-[4px] outline-none w-[70%]'>{getOtherMember(chatDetails)?.bio}</div>
+                            </div>
+                        )
+                    }
+                    
+                   
                     <div className='mt-20 flex justify-end'>
-                        <button className='py-2 px-5 bg-[#fd4f50] text-white rounded-md font-medium'>
+                        <button 
+                        onClick={() => dispatch(setIsUsfriendOpen(true))}
+                        className='py-2 px-5 bg-[#fd4f50] text-white rounded-md font-medium'>
                             Unfriend
                         </button>
                     </div>
@@ -248,10 +270,7 @@ const ChatInfo = () => {
                      className='mt-2 text-[#fd4f50] py-2 px-5 rounded-md border border-[#fd4f50]'>
                         Exit Group
                      </div>
-                   </div>
-
-
-                   
+                   </div>                   
                 </div>
             )
         }
@@ -276,7 +295,11 @@ const ChatInfo = () => {
         </div>
       </Modal>
 
-        
+      {
+        isUnfriendOpen && (
+            <UnFriend getOtherMember={() => getOtherMember(chatDetails)}/>
+        )
+      }
     </div>
   )
 }

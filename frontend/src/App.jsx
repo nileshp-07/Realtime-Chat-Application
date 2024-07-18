@@ -8,7 +8,7 @@ const ChatInfo  = lazy(() => import("./components/ChatInfo"))
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
 const Chats = lazy(() => import("./pages/Chats"));
-const UserProfile = lazy(() => import("./components/UserProfile"))
+const UserProfile = lazy(() => import("./components/modals/UserProfile"))
 // import Home from "./pages/Home" 
 const App = () => {
    const socket = getSocket();

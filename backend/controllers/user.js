@@ -2,12 +2,13 @@ import { Request } from "../models/Request.js";
 import User from "../models/User.js";
 import Chat from "../models/Chat.js"
 import { emitEvent } from "../utils/features.js";
-import { NEW_REQUEST } from "../constants/events.js";
+import { NEW_REQUEST, REFETCH_CHATS } from "../constants/events.js";
 
 export const searchUser = async (req, res) => {
     try{
         const {name} = req.query;
         const userId = req.user._id;
+
         const searchResult = await User.find({
             $or: [
                 { name: new RegExp(name, 'i') },
@@ -140,7 +141,8 @@ export const acceptRequest = async (req, res, next) => {
             })
         ])
 
-        // eventEmitter function to be added 
+        // eventEmitter 
+        emitEvent(req, REFETCH_CHATS, members);
 
 
         return res.status(200).json({

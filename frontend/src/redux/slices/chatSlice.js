@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit"
 
 
 const initialState = {
-    notificationsCount :  1,
+    notificationsCount :  0,
     newMessageAlert :[{
         chatId: "",
         count : 0

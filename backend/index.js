@@ -2,12 +2,12 @@ import express from "express";
 import {Server} from "socket.io";
 import {createServer} from "http";
 import cors from "cors"
-
+import {v2 as cloudinary} from "cloudinary"
 import dotenv from "dotenv"
 import connectDB from "./utils/db.js";
 import { errorMiddleware } from "./middlewares/errorHandler.js";
 import cookieParser from "cookie-parser";
-import { NEW_MESSAGE, NEW_MESSAGE_ALERT, START_TYPING, STOP_TYPING } from "./constants/events.js";
+import { CHAT_JOINED, NEW_MESSAGE, NEW_MESSAGE_ALERT, ONLINE_USERS, START_TYPING, STOP_TYPING } from "./constants/events.js";
 import { v4 as uuid } from "uuid";
 import { getSockets } from "./utils/features.js";
 import Message from "./models/Message.js";
@@ -19,6 +19,7 @@ import userRoutes from "./routes/user.js"
 import chatRoutes from "./routes/chats.js"
 import { socketAuthenticator } from "./middlewares/auth.js";
 import Chat from "./models/Chat.js";
+import { connectCloudinary } from "./utils/cloudinary.js";
 
 
 dotenv.config();
@@ -34,12 +35,12 @@ const io = new Server(server, {
         credentials: true
     }
 });
+
 const userSocketIdsMap = new Map();
-
-
-// connect to db 
+ 
+// connect to db  and cloudinary
 connectDB(process.env.DB_URL);
-
+connectCloudinary();
 
 // middlewares 
 app.use(express.json())
@@ -73,7 +74,7 @@ namespace.on("connection" , (socket) => {
 
     userSocketIdsMap.set(user._id.toString() , socket.id)  //mapping all the connected user'id to their socket
 
-    console.log("All connected users ", userSocketIdsMap)
+    // console.log("All connected users ", userSocketIdsMap)
 
 
     socket.on(NEW_MESSAGE , async (data) => {  //data -> we are getting from frontend
@@ -120,13 +121,19 @@ namespace.on("connection" , (socket) => {
 
     socket.on(START_TYPING, async({members, chatId}) => {
         const membersSocketsIDs = getSockets(members);
-        namespace.to(membersSocketsIDs).emit(START_TYPING, { chatId });
+        socket.to(membersSocketsIDs).emit(START_TYPING, { chatId });
     } )
 
-    socket.on(STOP_TYPING, async ({members, chatId}) => {
+    socket.on(STOP_TYPING, ({members, chatId}) => {
         const membersSocketIDs = getSockets(members);
 
         namespace.to(membersSocketIDs).emit(STOP_TYPING, {chatId});
+    })
+
+
+    socket.on(CHAT_JOINED, ({userId , members}) => {
+        const membersSocketIDs = getSockets(members);
+        namespace.to(membersSocketIDs).emit(ONLINE_USERS, Array.from(userSocketIdsMap))
     })
 
     socket.on("disconnect" , () => {

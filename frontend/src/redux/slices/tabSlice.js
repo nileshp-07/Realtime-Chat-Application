@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     isFileMenuOpen : false,
+    isUnfriendOpen : false,
     currTabModal : "Messages"
 }
 
@@ -15,10 +16,13 @@ const tabSlice = createSlice({
         },
         setCurrTabModal : (state, action) => {
             state.currTabModal = action.payload
+        },
+        setIsUsfriendOpen : (state, action)  => {
+            state.isUnfriendOpen = action.payload
         }
     }
 })
 
 
 export default tabSlice;
-export const {setIsFileMenuOpen, setCurrTabModal} = tabSlice.actions
+export const {setIsFileMenuOpen, setCurrTabModal,setIsUsfriendOpen} = tabSlice.actions

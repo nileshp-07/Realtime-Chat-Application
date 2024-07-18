@@ -2,7 +2,17 @@ import {ZodError} from "zod"
 
 const validateSchema = (schema) => (req, res , next) => {
     try{
-        schema.parse(req.body);
+        // Validate request body
+        if (req.body && Object.keys(req.body).length > 0) {
+            schema.parse(req.body);
+        }
+    
+        // Validate query parameters
+        if (req.query && Object.keys(req.query).length > 0) {
+            schema.parse(req.query);
+        }
+  
+
 
         next();
     }

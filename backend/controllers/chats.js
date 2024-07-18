@@ -2,20 +2,17 @@ import Chat from "../models/Chat.js"
 import User from "../models/User.js";
 import Message from "../models/Message.js"
 import { emitEvent } from "../utils/features.js";
-import { NEW_ATTACHMENT, NEW_MESSAGE } from "../constants/events.js";
+import { ALERT, NEW_ATTACHMENT, NEW_MESSAGE, NEW_MESSAGE_ALERT, REFETCH_CHATS } from "../constants/events.js";
+import { uploadFilesToCloudinary } from "../utils/cloudinary.js";
 
 export const newGroupChat = async (req, res, next) => {
     try{
         const {name, members} = req.body;
         const userId = req.user._id;
 
-        console.log(name, members, userId);
-
         if(members.length < 2)  return next({message: "min 3 member required to create group", status : 402});
 
         const allMembers = [...members, userId];
-
-        console.log(allMembers);
 
         await Chat.create({
             name,
@@ -24,7 +21,9 @@ export const newGroupChat = async (req, res, next) => {
             admin : userId
         })
 
-        // eventEmitter function to be added 
+        // eventEmitter 
+        emitEvent(req, ALERT, allMembers, `Welcome to ${name} group`);
+        emitEvent(req, REFETCH_CHATS, members)
 
 
         res.status(200).json({
@@ -66,8 +65,6 @@ export const getUserAllChats = async (req,res, next) => {
 
 export const addMembers = async (req, res, next) => {
     try{
-
-        console.log("REACHED");
         const {chatId, members} = req.body;
         const userId = req.user._id;
 
@@ -97,7 +94,11 @@ export const addMembers = async (req, res, next) => {
 
         chat.save();
 
-        // eventEmitter function to be added 
+        
+
+        // eventEmitter 
+        emitEvent(req, ALERT, chat.members);
+        emitEvent(req, REFETCH_CHATS, chat.members);
 
 
         return res.status(200).json({
@@ -120,6 +121,7 @@ export const removeMember = async (req, res, next) => {
         const userId = req.user._id;
 
         const chat = await Chat.findById(chatId);
+        const removedUser = await User.findById(memberId, "name")
 
         if(!chat) return next({message : "Chat not found", status: 404});
         if(!chat.isGroup) return next({message : "it is not a group", status: 401});
@@ -135,7 +137,15 @@ export const removeMember = async (req, res, next) => {
 
         chat.save();
 
-        // eventEmitter function to be added 
+
+
+        // eventEmitter
+        emitEvent(req, ALERT, chat.members, {
+            message:  `${removedUser.name} has been removed from the group`,
+            chatId
+        })
+
+        emitEvent(req, REFETCH_CHATS, chat.members);
 
         return res.status(200).json({
             success: true,
@@ -156,8 +166,6 @@ export const leaveGroup = async (req, res, next) => {
         const {chatId} = req.body;
 
         const userId= req.user._id;
-
-        console.log(chatId, "  ", userId)
 
         const chat = await Chat.findById(chatId);
 
@@ -182,9 +190,14 @@ export const leaveGroup = async (req, res, next) => {
         
         chat.members = remainingMembers;
 
+        const user = await User.findById(userId, "name")
         chat.save();
 
-        // eventEmitter function to be added 
+        // eventEmitter 
+        emitEvent(req, ALERT, chat.members, {
+            chatId,
+            message : `${user.name} has left the group`
+        })
 
         return res.status(200).json({
             success : false,
@@ -213,6 +226,8 @@ export const sendAttachments = async(req, res, next) => {
 
         if(files.length < 1)  return next({message: "Attachment Not found" , status: 404});
 
+        if(files.length > 5) return next({message: "Files can't be more than 5", status: 400});
+
         const [user, chat] = await Promise.all([
             User.findById(userId, "name"),  //find the user and selecting his name
             Chat.findById(chatId)
@@ -220,19 +235,15 @@ export const sendAttachments = async(req, res, next) => {
 
         if(!chat) return next({message: "Chat not found", status: 404});
 
-        // update files to clodinary 
-        const attachmentLinks = [
-            {
-               public_id : "attachment1",
-               url : "attachment1"
-            }, 
-           ];
+        // upload files to clodinary 
+        const attachments = await uploadFilesToCloudinary(files);
+       
 
         const message  = await Message.create({
             content: "", //no content in case of attachments
             sender : userId,
             chat : chatId,
-            attachments : attachmentLinks
+            attachments
         })
 
         console.log(message);
@@ -244,12 +255,11 @@ export const sendAttachments = async(req, res, next) => {
             }
         }
 
-        emitEvent(req , NEW_MESSAGE , chat.members, messageForRealtime);
+        // eventEmitter
+        emitEvent(req , NEW_MESSAGE , chat.members, {message: messageForRealtime, chatId});
 
         emitEvent(req ,NEW_MESSAGE_ALERT, chat.members, {chatId})
 
-
-        // eventEmitter function to be added 
 
         return res.status(200).json({
             success: true,
@@ -312,7 +322,8 @@ export const renameGroup = async (req, res, next) => {
         await chat.save();
 
 
-        // eventEmitter function to be added 
+        // eventEmitter
+        emitEvent(req, REFETCH_CHATS,  chat.members);
 
 
         return res.status(200).json({

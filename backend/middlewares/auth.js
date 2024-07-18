@@ -7,6 +7,8 @@ const isAuthenticated = (req, res, next) => {
                     req?.header("Authorization")?.replace("Bearer ", "");
 
 
+    // console.log("Cookie token : ", req.cookies.token);
+
     if(!token){
         return res.status(401).json({
             success: false,

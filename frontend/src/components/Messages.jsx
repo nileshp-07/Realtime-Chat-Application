@@ -445,18 +445,18 @@ const Messages = () => {
 
   return (
     <div className='w-full flex flex-col'>
-      <ChatHeader userTyping={userTyping}/>
-      <div ref={containerRef} className='overflow-y-scroll flex flex-col gap-5 mx-5 h-full pb-20'>
+      <ChatHeader userTyping={userTyping} chatDetails={chatDetails}/>
+      <div ref={containerRef} className='overflow-y-scroll flex flex-col gap-10 mx-5 h-full pb-20'>
         {allMessages.map((message, index) => (
-          <MessageComponent message={message} key={index} />
+          <MessageComponent message={message} isGroup={chatDetails?.isGroup} key={index} />
         ))}
 
         <div ref={bottomRef}/>
       </div>
       
 
-      <div className='flex gap-2 items-center justify-between w-[800px] mb-5 mx-auto rounded-full absolute bottom-0 left-[38%] bg-white '>
-         <div className='flex gap-3 items-center border border-black rounded-full py-3 px-4 w-full'>
+      <div className='flex gap-2 items-center justify-between w-[800px] mb-5 mx-auto rounded-full absolute bottom-0 left-[38%] bg-transparent '>
+         <div className='flex gap-3 items-center border border-black rounded-full py-3 px-4 w-full bg-white'>
             <div 
             onClick={handleFileMenuOpen}
             className='cursor-pointer'>

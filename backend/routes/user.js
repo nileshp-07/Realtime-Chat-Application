@@ -1,21 +1,10 @@
 import express from "express";
 const router = express.Router(); 
-import {z} from "zod"
 import validateSchema from "../middlewares/validateSchema.js"
 import { login, logout, signup, userProfile } from "../controllers/auth.js";
 import { isAuthenticated } from "../middlewares/auth.js";
 import { acceptRequest, getMyNotifications, myFriends, searchUser, sendRequest } from "../controllers/user.js";
-
-const signupSchema = z.object({
-    name : z.string(),
-    username : z.string().min(5).max(12),
-    password : z.string(),
-})
-
-const loginSchema = z.object({
-    username : z.string().min(5).max(12),
-    password : z.string()
-})
+import { acceptRequestSchema, loginSchema, searchFriendSchema, sendRequestSchema, signupSchema, } from "../lib/validators.js";
 
 
 router.post("/signup" ,validateSchema(signupSchema), signup)
@@ -27,9 +16,9 @@ router.use(isAuthenticated) // so adding a middleware for authentication which w
 
 router.get("/user-profile", userProfile);
 router.get("/logout", logout);
-router.get("/search", searchUser);
-router.post("/sendrequest", sendRequest);
-router.post("/acceptRequest", acceptRequest);
+router.get("/search",validateSchema(searchFriendSchema), searchUser);
+router.post("/sendrequest", validateSchema(sendRequestSchema), sendRequest);
+router.post("/acceptRequest", validateSchema(acceptRequestSchema), acceptRequest);
 router.get("/notifications", getMyNotifications);
 router.get("/friends", myFriends);
 
