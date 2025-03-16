@@ -17,6 +17,9 @@ import toast from "react-hot-toast"
 import {setCurrTabModal}  from "../redux/slices/tabSlice"
 import Logout from './modals/Logout';
 import { setNotificationsCount } from '../redux/slices/chatSlice';
+import { useNavigate } from 'react-router-dom';
+import { FaUserAlt } from "react-icons/fa";
+
 
 
 const Sidebar = () => {
@@ -26,6 +29,8 @@ const Sidebar = () => {
     const {user} = useSelector((state) => state.auth) 
     const [open, setOpen] = React.useState(false);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+
     const handleOpenModal = (tabName) => {
          setOpen(true);
          dispatch(setCurrTabModal(tabName))
@@ -44,11 +49,17 @@ const Sidebar = () => {
             <div>
                 <div 
                     onClick={() => handleOpenModal("Profile")}
-                    className='h-[60px] w-[60px] rounded-full bg-white cursor-pointer'>
-                        <img
-                            src={user?.avatar?.url}
-                            className='h-full w-full rounded-full'
-                        />
+                    className='h-[60px] w-[60px] flex items-center justify-center rounded-full bg-white cursor-pointer'>
+                        {
+                            user?.avatar?.url ? (
+                                 <img
+                                    src={user?.avatar?.url}
+                                    className='h-full w-full rounded-full'
+                                />
+                            ) : (
+                                <FaUserAlt size={30}/>
+                            )
+                        }
                 </div>
                 <div className='text-white flex flex-col gap-8 items-center mt-20'>
                     <div
@@ -83,15 +94,16 @@ const Sidebar = () => {
                     </div>
                 </div>
             </div>
-            {/* <div 
-            // onClick={logoutHandler}
-            className='text-white flex justify-center bg-[#1F2A3E] w-full p-5'>
-                <FiLogOut size={24}/>
-            </div> */}
             <div 
                 onClick={() => handleOpenModal("Logout")}
                 className={`${currTabModal === "Logout" && "text-[#fd4f50]"} cursor-pointer text-white flex justify-center bg-[#1F2A3E] w-full p-5`}>
-                  <FiLogOut  size={24}/>
+                  {
+                    token ? (
+                        <FiLogOut  size={24}/>
+                    ) : (
+                        <div className='py-1.5 px-3 bg-[#fd4f50] rounded-full text-white'>Login</div>
+                    ) 
+                  }
             </div>
         </div>
         <Modal
@@ -123,7 +135,11 @@ const Sidebar = () => {
             }
             {
                 currTabModal === "Logout" && (
-                    <Logout setOpen={setOpen}/>
+                    token ? (
+                        <Logout setOpen={setOpen}/>
+                    ) : (
+                        navigate("/login")
+                    )
                 )
             }
         </div>

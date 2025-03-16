@@ -14,20 +14,19 @@ const Login = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [loginData, setLoginData] = useState({
-                                        username : "",
-                                        password : ""
-                                      })
-
-    const [signupData, setSignupData] = useState({
-                                      name : "",
-                                      username : "",
-                                      password : "",
-                                      confirmPassword : ""
-                                    })
+    const initLoginData = {
+      username : "",
+      password : ""
+    }
+    const initSignupData = {
+      name : "",
+      username : "",
+      password : "",
+      confirmPassword : ""
+    }
+    const [loginData, setLoginData] = useState(initLoginData)
+    const [signupData, setSignupData] = useState(initSignupData)
     
-
-   
 
     const handleSignupDataChange = (e) => {
        const {name, value} = e.target;
@@ -120,6 +119,12 @@ const Login = () => {
         setIsLoading(false);
         navigate("/");
     }
+
+  const handleSwitch = () => {
+     setisLogin(!isLogin)
+     setLoginData(initLoginData)
+     setSignupData(initSignupData)
+  }
    
   return (
     <div className='h-screen w-full grid place-items-center'>
@@ -218,7 +223,7 @@ const Login = () => {
               }
             </button>
 
-            <p className='flex justify-center gap-1'>or <span className='cursor-pointer text-[#fd4f50]' onClick={() => setisLogin(!isLogin)}>{isLogin ? " Register" : "Login"}</span>instead</p>
+            <p className='flex justify-center gap-1'>or <span className='cursor-pointer text-[#fd4f50]' onClick={handleSwitch}>{isLogin ? " Register" : "Login"}</span>instead</p>
          </form>
       </div>
     </div>

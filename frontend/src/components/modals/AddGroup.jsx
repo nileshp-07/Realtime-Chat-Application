@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { server_url } from '../../constants/envConfig';
+import { setCurrTabModal } from '../../redux/slices/tabSlice';
 
 const AddGroup = () => {
   const [groupName, setGroupName] = useState("");
@@ -15,7 +16,7 @@ const AddGroup = () => {
   const handleCreateGroup = async () => {
      if(!groupName) return toast.error("Please Enter the Group name first")
      
-     if(members.length < 3) return toast.error("Min 3 members required to Create a group");
+     if(members.length < 2) return toast.error("Min 2 members required to Create a group");
 
      setLoading(true)
      const toastId = toast.loading("Creating Group...");
@@ -29,6 +30,8 @@ const AddGroup = () => {
         console.log(res);
 
         toast.success("Group Created", {id: toastId});
+
+        dispatch(setCurrTabModal("Messages"));
      }
      catch(err)
      {

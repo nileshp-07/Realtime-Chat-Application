@@ -1,6 +1,7 @@
 import React from 'react'
 import { useSelector } from 'react-redux';
 import moment from "moment"
+import AttachmentComponent from './AttachmentComponent';
 
 const MessageComponent = ({message, isGroup}) => {
     // console.log("message",message);
@@ -11,7 +12,7 @@ const MessageComponent = ({message, isGroup}) => {
     const timeAgo = moment(createdAt).fromNow();
 
    return (
-    <div className={`flex ${isSameSender ? "justify-end" : "justify-start"}`}>
+    <div className={`flex mt-2 ${isSameSender ? "justify-end" : "justify-start"}`}>
         <div className={`w-fit px-2 py-1 rounded-md ${isSameSender ? "bg-[#fd4f50] text-white" : "bg-[#E1EEF7]"}`}>
             {
                 isGroup && !isSameSender && (
@@ -24,7 +25,7 @@ const MessageComponent = ({message, isGroup}) => {
                         <p className=''>{content}</p>
                     ) : (
                         attachments.map((attachment, index) => (
-                            <div key={index}>{attachment.url}</div>
+                            <AttachmentComponent key={index} url={attachment.url}/>
                         ))
                     )
                 }

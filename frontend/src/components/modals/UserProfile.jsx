@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { FaUserAlt } from 'react-icons/fa'
 import { useSelector } from 'react-redux'
 
 const UserProfile = () => {
@@ -13,11 +14,17 @@ const UserProfile = () => {
     })
   return (
     <div className="flex flex-col items-center  py-8 px-14 w-[700px] bg-white outline-none rounded-md shadow-custom">
-        <div className='h-[200px] w-[200px] rounded-full bg-black'>
-            <img
-                src={user?.avatar?.url}
-                className='w-full h-full rounded-full'
-            />
+        <div className='h-[200px] w-[200px] flex items-center justify-center rounded-full border border-[#fd4f50]'>
+            {
+                user?.avatar?.url ? (
+                     <img
+                        src={user?.avatar?.url}
+                        className='h-full w-full rounded-full'
+                    />
+                ) : (
+                    <FaUserAlt size={100}/>
+                )
+            }
         </div>
 
         <div className='w-full mt-8'>

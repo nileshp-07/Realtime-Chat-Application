@@ -1,5 +1,5 @@
 import React from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setCurrTabModal } from '../../redux/slices/tabSlice';
 import { setToken, setUser } from '../../redux/slices/authSlice';
 import { server_url } from '../../constants/envConfig';
@@ -10,11 +10,15 @@ import {useNavigate} from "react-router-dom"
 const Logout = ({setOpen}) => {
     const dispatch = useDispatch();
     const navigate = useNavigate()
+    const {token} = useSelector((state) => state.auth)
 
     const handleClose = () => {
         dispatch(setCurrTabModal("Messages"))
         setOpen(false);
     }
+
+    if(token)
+        navigate("/");
 
     const logoutHandler = async () => {
         try{

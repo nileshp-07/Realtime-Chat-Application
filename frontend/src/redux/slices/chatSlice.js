@@ -1,9 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit"
+import { getOrSaveFromStorage } from "../../lib/features";
 
 
 const initialState = {
     notificationsCount :  0,
-    newMessageAlert :[{
+    newMessageAlert : getOrSaveFromStorage({
+        key : "newMessageAlert",
+        get : true
+    }) || [{
         chatId: "",
         count : 0
     }],
@@ -34,7 +38,11 @@ const chatSlice = createSlice({
                 state.newMessageAlert[index].count++;
             }
         },
-
+        removeNewMessagesAlert: (state, action) => {
+            state.newMessageAlert = state.newMessageAlert.filter(
+              (item) => item.chatId !== action.payload
+            );
+        },
         setIsNewGroup : (state, action) => {
             state.isNewGroup = action.payload;
         }
@@ -43,4 +51,4 @@ const chatSlice = createSlice({
 
 
 export default chatSlice;
-export const {setNotificationsCount, setNewMessageAlert, setIsNewGroup} = chatSlice.actions
+export const {setNotificationsCount, setNewMessageAlert,removeNewMessagesAlert, setIsNewGroup} = chatSlice.actions

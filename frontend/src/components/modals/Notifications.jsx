@@ -4,14 +4,17 @@ import { IoMdCheckmark } from "react-icons/io";
 import {server_url} from "../../constants/envConfig"
 import axios  from "axios";
 import toast from "react-hot-toast"
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setNotificationsCount } from '../../redux/slices/chatSlice';
 
 const Notifications = () => {
   const [requests , setRequests] = useState([]);
   const [loading , setLoading] = useState(false);
   const {token}  = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
 
+  dispatch(setNotificationsCount(0));
   const getAllRequestHandler = async () => {
      setLoading(true);
      try{
