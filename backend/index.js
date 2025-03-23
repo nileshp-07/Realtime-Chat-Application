@@ -31,7 +31,7 @@ const server = createServer(app)
 const io = new Server(server, {
     path: '/socket.io',
     cors: {
-        origin:  ["http://localhost:5173", process.env.CLIENT_URL], // Frontend URL
+        origin: process.env.SOCKET_URL, // Frontend URL
         credentials: true
     }
 });

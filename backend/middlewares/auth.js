@@ -43,7 +43,7 @@ const socketAuthenticator = async (socket, next) => {
     catch(err)
     {
         console.log(err);
-        return next(new ErrorHandler("Could not authenticate the socket", 401));
+        return next();
     }
 }
 
