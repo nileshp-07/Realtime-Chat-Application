@@ -24,6 +24,8 @@ import { connectCloudinary } from "./utils/cloudinary.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 4000; 
+const SOCKET_URL = process.env.SOCKET_URL;
+const CLIENT_URL = process.env.CLIENT_URL;
 
 
 const app = express();
@@ -31,7 +33,7 @@ const server = createServer(app)
 const io = new Server(server, {
     path: '/socket.io',
     cors: {
-        origin: process.env.SOCKET_URL, // Frontend URL
+        origin: SOCKET_URL ? [SOCKET_URL] : "*", 
         credentials: true
     }
 });
@@ -46,7 +48,7 @@ connectCloudinary();
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
-    origin : ["http://localhost:5173", process.env.CLIENT_URL],
+    origin : CLIENT_URL ? [CLIENT_URL] : "*", 
     credentials: true
 }))
 app.use("/api/v1/user", userRoutes);
